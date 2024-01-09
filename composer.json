@@ -1,0 +1,6 @@
+{
+    "require": {
+        "amphp/http-server": "^3.3",
+        "amphp/log": "^2.0"
+    }
+}

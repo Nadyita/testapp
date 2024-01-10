@@ -1,0 +1,39 @@
+---
+name: Build and push docker image
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+jobs:
+  build:
+    name: Create docker image
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to registries
+        shell: bash
+        run: |
+          echo "${{ secrets.QUAY_PASSWORD }}" | docker login -u "${{ secrets.QUAY_USERNAME }}" --password-stdin quay.io/nadyita
+          echo "${{ secrets.GHCR_PAT }}" | docker login -u nadyita --password-stdin ghcr.io
+      - name: Build and push the tagged Docker image
+        shell: bash
+        run: |
+          docker buildx build \
+            --push \
+            --platform linux/amd64,linux/arm64 \
+            --file Dockerfile \
+            --tag "quay.io/nadyita/testapp:latest" \
+            --tag "quay.io/nadyita/testapp:latest-$(date +'%Y%m%d-%H%M%S')" \
+            --tag "ghcr.io/nadybot/testapp:latest" \
+            --tag "ghcr.io/nadybot/testapp:latest-$(date +'%Y%m%d-%H%M%S')" \
+            .

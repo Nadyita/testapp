@@ -28,7 +28,7 @@ $requestHandler = new class() implements RequestHandler {
         return new Response(
             status: HttpStatus::OK,
             headers: ['Content-Type' => 'text/plain'],
-            body: 'Hello, world 4!',
+            body: 'Hello, world 5!',
         );
     }
 };
